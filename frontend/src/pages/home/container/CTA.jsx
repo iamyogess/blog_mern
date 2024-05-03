@@ -23,7 +23,7 @@ const CTA = () => {
 
       {/* main section  */}
       <section className="relative bg-dark-hard px-5">
-        <div className="container grid grid-cols-12 mx-auto py-10 md:pb-20 lg:place-items-center">
+        <div className="container grid grid-cols-12 mx-auto py-10 md:pb-20 lg:place-items-center ">
           {/* search and button  */}
           <div className="col-span-12 lg:col-span-6">
             <h2 className="text-white font-roboto font-bold text-2xl md:text-4xl md:text-center md:leading-normal lg:text-left">
