@@ -10,7 +10,7 @@ const App = () => {
     <div className="App font-opensans">
       <Routes>     
         <Route index path="/" element={<HomePage />} />
-        <Route index path="/blog/:id" element={<ArticleDetailPage />} />
+        <Route path="/blog/:id" element={<ArticleDetailPage />} />
       </Routes>
     </div>
   );
