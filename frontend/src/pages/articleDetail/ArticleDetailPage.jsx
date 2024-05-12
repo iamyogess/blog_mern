@@ -81,7 +81,7 @@ const ArticleDetailPage = () => {
             </p>
           </div>
           {/* comments section  */}
-          <CommentsContainer className="mt-10"/>
+          <CommentsContainer className="mt-10" loggedinUserId="a"/>
         </article>
         <SuggestedPosts
           header="Latest Article"
