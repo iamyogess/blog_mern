@@ -91,6 +91,7 @@ const ArticleDetailPage = () => {
             tags={tags}
             className="mt-8 lg:mt-0 lg:max-w-xs"
           />
+          {/* social media buttons  */}
           <div className="mt-7">
             <h2 className="font-roboto font-medium text-dark-hard mb-4 md:text-xl">
               Share on:

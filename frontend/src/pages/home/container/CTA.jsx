@@ -68,7 +68,7 @@ const CTA = () => {
                     Future of Work
                   </h2>
                   <p className="text-dark-light text-sm md:text-lg">
-                    Majority of peole will work in jobs that don’t exist today.
+                    Majority of people will work in jobs that don’t exist today.
                   </p>
                 </div>
               </div>
