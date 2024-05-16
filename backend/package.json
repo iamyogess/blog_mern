@@ -1,0 +1,19 @@
+{
+  "name": "blogbackend",
+  "version": "1.0.0",
+  "description": "no description sir",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server",
+    "dev": "nodemon server"
+  },
+  "author": "Yogesh ",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "esm": "^3.2.25",
+    "express": "^4.19.2",
+    "mongoose": "^8.3.5"
+  }
+}
