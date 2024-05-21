@@ -5,3 +5,9 @@ export const errorResponserHandler = (err, req, res, next) => {
     stack: process.env.NODE_ENV === "production" ? null : err.stack,
   });
 };
+
+export const invalidPathHandler = (req, res, next) => {
+  let error = new Error("Invalid Path");
+  error.statusCode = 404;
+  next(error);
+};
