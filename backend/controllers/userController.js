@@ -1,6 +1,6 @@
 import User from "../models/User.js";
 
-export const registerUser = async (req, res,next) => {
+export const registerUser = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
     // check user exists
@@ -31,4 +31,29 @@ export const registerUser = async (req, res,next) => {
   }
 };
 
-// export { registerUser };
+export const loginUser = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    let user = await User.findOne({ email });
+    if (!user) {
+      throw new Error("Email not found!");
+    }
+
+    if (await user.comparePassword(password)) {
+      return res.status(201).json({
+        _id: user.id,
+        avatar: user.avatar,
+        name: user.name,
+        email: user.email,
+        verified: user.verified,
+        admin: user.admin,
+        token: await user.generateJWT(),
+      });
+    } else {
+      throw new Error("Invalid Email or Password!");
+    }
+  } catch (error) {
+    next(error);
+  }
+};
