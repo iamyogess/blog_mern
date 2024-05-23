@@ -1,4 +1,6 @@
+import { uploadPicture } from "../middlewares/uploadPictureMiddleware.js";
 import User from "../models/User.js";
+import { fileRemover } from "../utils/fileRemover.js";
 
 export const registerUser = async (req, res, next) => {
   try {
@@ -69,6 +71,7 @@ export const userProfile = async (req, res, next) => {
         email: user.email,
         verified: user.verified,
         admin: user.admin,
+        token: await user.generateJWT(),
       });
     } else {
       let error = new Error("User not found!");
@@ -103,16 +106,63 @@ export const updateProfile = async (req, res, next) => {
       email: updatedUserProfile.email,
       verified: updatedUserProfile.verified,
       admin: updatedUserProfile.admin,
+      token: await updatedUserProfile.generateJWT(),
     });
   } catch (error) {
     next(error);
   }
 };
 
-export const updateProfilePicture = async (req,res,next) => {
+export const updateProfilePicture = async (req, res, next) => {
   try {
-    
+    const upload = uploadPicture.single("profilePicture");
+
+    upload(req, res, async function (err) {
+      if (err) {
+        const error = new Error(
+          "An unknown error occured when uploading " + err.message
+        );
+        next(error);
+      } else {
+        // every thing went well
+        if (req.file) {
+          let filename;
+          let updatedUser = await User.findById(req.user._id);
+          filename = updatedUser.avatar;
+          if (filename) {
+            fileRemover(filename);
+          }
+          updatedUser.avatar = req.file.filename;
+          await updatedUser.save();
+          res.json({
+            _id: updatedUser._id,
+            avatar: updatedUser.avatar,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            verified: updatedUser.verified,
+            admin: updatedUser.admin,
+            token: await updatedUser.generateJWT(),
+          });
+        } else {
+          let filename;
+          let updatedUser = await User.findById(req.user._id);
+          filename = updatedUser.avatar;
+          updatedUser.avatar = "";
+          await updatedUser.save();
+          fileRemover(filename);
+          res.json({
+            _id: updatedUser._id,
+            avatar: updatedUser.avatar,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            verified: updatedUser.verified,
+            admin: updatedUser.admin,
+            token: await updatedUser.generateJWT(),
+          });
+        }
+      }
+    });
   } catch (error) {
     next(error);
   }
-}
+};
