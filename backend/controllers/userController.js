@@ -79,3 +79,40 @@ export const userProfile = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateProfile = async (req, res, next) => {
+  try {
+    let user = await User.findById(req.user._id);
+    if (!user) {
+      throw new Error("User not found!");
+    }
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+    if (req.body.password && req.body.password.length < 6) {
+      throw new Error("Password length must be at least 6 characters");
+    } else if (req.body.password) {
+      user.password = req.body.password;
+    }
+
+    const updatedUserProfile = await user.save();
+
+    return res.status(201).json({
+      _id: updatedUserProfile.id,
+      avatar: updatedUserProfile.avatar,
+      name: updatedUserProfile.name,
+      email: updatedUserProfile.email,
+      verified: updatedUserProfile.verified,
+      admin: updatedUserProfile.admin,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateProfilePicture = async (req,res,next) => {
+  try {
+    
+  } catch (error) {
+    next(error);
+  }
+}
