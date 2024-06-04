@@ -1,38 +1,33 @@
 import express from "express";
 import dotenv from "dotenv";
-dotenv.config();
-
+import cors from "cors";
 import connectDB from "./config/db.js";
-import {
-  errorResponserHandler,
-  invalidPathHandler,
-} from "./middlewares/errorHandler.js";
-
-//routes
+import { errorResponserHandler, invalidPathHandler } from "./middlewares/errorHandler.js";
 import userRoutes from "./routes/userRoutes.js";
 
+// Load environment variables from .env file
+dotenv.config();
+
+// Initialize Express app
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-//middlewares
+app.use(cors());
 app.use(express.json());
-app.use("/api/users", userRoutes);
 
-//database connection
+// Connect to the database
 connectDB();
 
-app.use(invalidPathHandler);
+// Define routes
+app.use("/api/users", userRoutes);
+
+// Error handling middleware
+app.use(invalidPathHandler); 
 app.use(errorResponserHandler);
 
+// Define the server's port
+const PORT = process.env.PORT || 5000;
 
-app.get("/", (req, res) => {
-  res.send("hi");
-});
-
-app.get("/hi", (req, res) => {
-  res.send("hello k 6?");
-});
-
+// Start the server
 app.listen(PORT, () => {
   console.log(`Server started at http://localhost:${PORT}`);
 });

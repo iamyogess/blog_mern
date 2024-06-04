@@ -1,10 +1,26 @@
 import React from "react";
 import MainLayout from "./../../components/MainLayout";
 import { Link } from "react-router-dom";
+import { signup } from "../../services/index/users";
 
 import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 const RegisterPage = () => {
+  const { mutate, isLoading } = useMutation({
+    mutationFn: ({ name, email, password }) => {
+      return signup({ name, email ,password});
+    },
+    onSuccess: (data) => {
+      console.log(data);
+    },
+    onError:(error) => {
+      toast.error(error.message)
+      console.log(error);
+    }
+  });
+
   const {
     register,
     handleSubmit,
@@ -17,10 +33,13 @@ const RegisterPage = () => {
       password: "",
       confirmPassword: "",
     },
-    mood: "onChange",
+    mode: "onChange",
   });
 
-  const submitHandler = () => {};
+  const submitHandler = (data) => {
+    const { name, email, password } = data;
+    mutate({ name, email, password });
+  };
 
   const password = watch("password");
 
@@ -45,7 +64,7 @@ const RegisterPage = () => {
                 {...register("name", {
                   minLength: {
                     value: 1,
-                    message: "Name length must be atleast 1 character",
+                    message: "Name length must be at least 1 character",
                   },
                   required: {
                     value: true,
@@ -112,7 +131,7 @@ const RegisterPage = () => {
                 {...register("password", {
                   minLength: {
                     value: 6,
-                    message: "Password length must be at least 6 character",
+                    message: "Password length must be at least 6 characters",
                   },
                   required: {
                     value: true,
@@ -143,18 +162,13 @@ const RegisterPage = () => {
                 type="password"
                 id="confirmPassword"
                 {...register("confirmPassword", {
-                  //   minLength: {
-                  //     value: 6,
-                  //     message:
-                  //       "Confirm Password length must be at least 6 character",
-                  //   },
                   required: {
                     value: true,
                     message: "Confirm Password is required!",
                   },
                   validate: (value) => {
                     if (value !== password) {
-                      return "Password do not match!";
+                      return "Passwords do not match!";
                     }
                   },
                 })}
@@ -179,7 +193,7 @@ const RegisterPage = () => {
             </Link>
             <button
               type="submit"
-              disabled={!isValid}
+              disabled={!isValid || isLoading}
               className="bg-primary text-white font-bold text-lg py-4 px-8 w-full rounded-lg my-6 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               Register
