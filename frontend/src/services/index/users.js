@@ -31,3 +31,22 @@ export const login = async ({ email, password }) => {
     throw new Error(error.message);
   }
 };
+
+export const getUserProfile = async ({ token }) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const { data } = await axios.get(
+      "http://127.0.0.1:5000/api/users/profile",
+      config
+    );
+    return data;
+  } catch (error) {
+    if (error.response && error.response.data.message)
+      throw new Error(error.response.data.message);
+    throw new Error(error.message);
+  }
+};
