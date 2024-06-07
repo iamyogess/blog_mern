@@ -4,15 +4,57 @@ import { createPortal } from "react-dom";
 
 import { stables } from "../constants";
 import CropEasy from "./crop/CropEasy";
+import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateProfilePicture } from "../services/index/users";
+import { userActions } from "../store/reducers/userReducer";
 
 const ProfilePicture = ({ avatar }) => {
+  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
+  const userState = useSelector((state) => state.user);
   const [openCrop, setOpenCrop] = useState(false);
   const [photo, setPhoto] = useState(null);
+
+  const { mutate, isLoading } = useMutation({
+    mutationFn: ({ token, formData }) => {
+      return updateProfilePicture({
+        token: token,
+        formData: formData,
+      });
+    },
+    onSuccess: (data) => {
+      dispatch(userActions.setUserInfo(data));
+      setOpenCrop(false);
+      localStorage.setItem("account", JSON.stringify(data));
+      queryClient.invalidateQueries(["profile"]);
+      toast.success("Profile Photo is deleted!");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+      console.log(error);
+    },
+  });
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setPhoto({ url: URL.createObjectURL(file), file });
     setOpenCrop(true);
+  };
+
+  const handleDeleteImage = () => {
+    if (window.confirm("Do you want to delete your profile picture?")) {
+      try {
+        const formData = new FormData();
+        formData.append("profilePicture", undefined);
+
+        mutate({ token: userState.userInfo.token, formData: formData });
+      } catch (error) {
+        toast.error(error.message);
+        console.log(error);
+      }
+    }
   };
 
   return (
@@ -49,6 +91,7 @@ const ProfilePicture = ({ avatar }) => {
           />
         </dir>
         <button
+          onClick={handleDeleteImage}
           type="button"
           className="border border-red-500 rounded-lg px-4 py-2 text-red-500"
         >
