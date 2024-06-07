@@ -120,7 +120,7 @@ export const updateProfilePicture = async (req, res, next) => {
     upload(req, res, async function (err) {
       if (err) {
         const error = new Error(
-          "An unknown error occured when uploading " + err.message
+          "An unknown error ocurred when uploading " + err.message
         );
         next(error);
       } else {

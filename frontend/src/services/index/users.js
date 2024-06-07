@@ -50,3 +50,22 @@ export const getUserProfile = async ({ token }) => {
     throw new Error(error.message);
   }
 };
+export const updateProfile = async ({ token, userData }) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const { data } = await axios.put(
+      "http://127.0.0.1:5000/api/users/updateProfile",
+      userData,
+      config
+    );
+    return data;
+  } catch (error) {
+    if (error.response && error.response.data.message)
+      throw new Error(error.response.data.message);
+    throw new Error(error.message);
+  }
+};
