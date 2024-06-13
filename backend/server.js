@@ -1,14 +1,16 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+
 import connectDB from "./config/db.js";
 import {
   errorResponserHandler,
   invalidPathHandler,
 } from "./middlewares/errorHandler.js";
 import userRoutes from "./routes/userRoutes.js";
-import path from "path";
-import { fileURLToPath } from "url";
+import postRoutes from "./routes/postRoutes.js";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -24,6 +26,7 @@ connectDB();
 
 // Define routes
 app.use("/api/users", userRoutes);
+app.use("/api/posts", postRoutes);
 
 // Define __dirname using ES module approach
 const __filename = fileURLToPath(import.meta.url);
