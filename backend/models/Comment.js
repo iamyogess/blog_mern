@@ -11,17 +11,20 @@ const CommentSchema = new Schema(
       ref: "Comment",
       default: null,
     },
-    replyOnUser: { type: Schema.Types.ObjectId, ref: "User", default: null },
+    replyOnUser: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true } }
 );
 
 CommentSchema.virtual("replies", {
   ref: "Comment",
   localField: "_id",
-  foreignField: "parents",
+  foreignField: "parent",
 });
 
 const Comment = model("Comment", CommentSchema);
-
 export default Comment;

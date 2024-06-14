@@ -9,9 +9,7 @@ const PostSchema = new Schema(
     photo: { type: String, required: false },
     user: { type: Schema.Types.ObjectId, ref: "User" },
     tags: { type: [String] },
-    categories: {
-      type: [{ type: Schema.Types.ObjectId, ref: "PostCategories" }],
-    },
+    categories: [{ type: Schema.Types.ObjectId, ref: "PostCategories" }],
   },
   { timestamps: true, toJSON: { virtuals: true } }
 );
@@ -23,5 +21,4 @@ PostSchema.virtual("comments", {
 });
 
 const Post = model("Post", PostSchema);
-
 export default Post;

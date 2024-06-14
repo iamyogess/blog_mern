@@ -105,12 +105,26 @@ const getPost = async (req, res, next) => {
           check: true,
           parent: null,
         },
+        populate: [
+          {
+            path: "user",
+            select: ["name", "avatar"],
+          },
+          {
+            path: "replies",
+            match: {
+              check: true,
+            },
+          },
+        ],
       },
     ]);
+
     if (!post) {
-      const error = new Error("Post not found!");
-      next(error);
+      const error = new Error("Post was not found");
+      return next(error);
     }
+
     return res.json(post);
   } catch (error) {
     next(error);
