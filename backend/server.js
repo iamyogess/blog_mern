@@ -11,6 +11,7 @@ import {
 } from "./middlewares/errorHandler.js";
 import userRoutes from "./routes/userRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
+import commentRoutes from "./routes/commentRoute.js";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -27,6 +28,7 @@ connectDB();
 // Define routes
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
+app.use("/api/comments", commentRoutes);
 
 // Define __dirname using ES module approach
 const __filename = fileURLToPath(import.meta.url);
