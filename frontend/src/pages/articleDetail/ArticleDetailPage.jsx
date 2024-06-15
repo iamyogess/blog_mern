@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import MainLayout from "../../components/MainLayout";
 import BreadCrumbs from "../../components/BreadCrumbs";
 import { images } from "../../constants";
@@ -9,11 +9,6 @@ import SocialShareButton from "../../components/SocialShareButton";
 import { useQuery } from "@tanstack/react-query";
 import { getSinglePost } from "../../services/posts";
 
-const breadCrumbsData = [
-  { name: "Home", link: "/" },
-  { name: "Blog", link: "/blog" },
-  { name: "Article Title", link: "/blog/1" },
-];
 const postData = [
   {
     _id: "1",
@@ -54,11 +49,18 @@ const tags = [
 const ArticleDetailPage = () => {
   const { slug } = useParams();
 
-  const {} = useQuery({
+  const [breadCrumbs, setBreadCrumbs] = useState([]);
+
+  const { data } = useQuery({
     queryFn: () => getSinglePost({ slug }),
     queryKey: ["singlePost"],
     onSuccess: (data) => {
       console.log(data);
+      setBreadCrumbs([
+        { name: "Home", link: `/` },
+        { name: "Blog", link: `/blog` },
+        { name: "Article Title", link: `/blog/${data.slug}` },
+      ]);
     },
   });
 
@@ -66,7 +68,7 @@ const ArticleDetailPage = () => {
     <MainLayout>
       <section className="container mx-auto max-w-5xl flex flex-col px-5 py-5 lg:flex-row lg:gap-x-5 lg:items-start">
         <article className="flex-1">
-          <BreadCrumbs data={breadCrumbsData} />
+          <BreadCrumbs data={breadCrumbs} />
           <img
             src={images.Post1Image}
             alt="Post Image"
