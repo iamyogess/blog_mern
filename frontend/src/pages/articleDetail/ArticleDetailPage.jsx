@@ -2,10 +2,12 @@ import React from "react";
 import MainLayout from "../../components/MainLayout";
 import BreadCrumbs from "../../components/BreadCrumbs";
 import { images } from "../../constants";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import SuggestedPosts from "./container/SuggestedPosts";
 import CommentsContainer from "../../components/comments/CommentsContainer";
 import SocialShareButton from "../../components/SocialShareButton";
+import { useQuery } from "@tanstack/react-query";
+import { getSinglePost } from "../../services/posts";
 
 const breadCrumbsData = [
   { name: "Home", link: "/" },
@@ -50,6 +52,16 @@ const tags = [
 ];
 
 const ArticleDetailPage = () => {
+  const { slug } = useParams();
+
+  const {} = useQuery({
+    queryFn: () => getSinglePost({ slug }),
+    queryKey: ["singlePost"],
+    onSuccess: (data) => {
+      console.log(data);
+    },
+  });
+
   return (
     <MainLayout>
       <section className="container mx-auto max-w-5xl flex flex-col px-5 py-5 lg:flex-row lg:gap-x-5 lg:items-start">
