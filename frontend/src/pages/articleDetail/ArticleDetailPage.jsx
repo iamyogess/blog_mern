@@ -1,13 +1,20 @@
 import React, { useState } from "react";
 import MainLayout from "../../components/MainLayout";
 import BreadCrumbs from "../../components/BreadCrumbs";
-import { images } from "../../constants";
+import { images, stables } from "../../constants";
 import { Link, useParams } from "react-router-dom";
 import SuggestedPosts from "./container/SuggestedPosts";
 import CommentsContainer from "../../components/comments/CommentsContainer";
 import SocialShareButton from "../../components/SocialShareButton";
 import { useQuery } from "@tanstack/react-query";
+import { generateHTML } from "@tiptap/html";
+import Bold from "@tiptap/extension-bold";
+import Document from "@tiptap/extension-document";
+import Paragraph from "@tiptap/extension-paragraph";
+import Text from "@tiptap/extension-text";
+import Italic from "@tiptap/extension-italic";
 import { getSinglePost } from "../../services/posts";
+import parse from "html-react-parser";
 
 const postData = [
   {
@@ -50,6 +57,7 @@ const ArticleDetailPage = () => {
   const { slug } = useParams();
 
   const [breadCrumbs, setBreadCrumbs] = useState([]);
+  const [body, setBody] = useState(null);
 
   const { data } = useQuery({
     queryFn: () => getSinglePost({ slug }),
@@ -61,6 +69,11 @@ const ArticleDetailPage = () => {
         { name: "Blog", link: `/blog` },
         { name: "Article Title", link: `/blog/${data.slug}` },
       ]);
+      setBody(
+        parse(
+          generateHTML(data?.body, [Bold, Italic, Paragraph, Document, Text])
+        )
+      );
     },
   });
 
@@ -70,22 +83,30 @@ const ArticleDetailPage = () => {
         <article className="flex-1">
           <BreadCrumbs data={breadCrumbs} />
           <img
-            src={images.Post1Image}
-            alt="Post Image"
+            src={
+              data?.photo
+                ? stables.UPLOAD_FOLDER_BASE_URL + data?.photo
+                : images.samplePostImage
+            }
+            alt={data?.title}
             className="rounded-xl w-full"
           />
-          <Link
-            to="/blog?category=selectedCategory"
-            className="text-primary text-sm font-roboto inline-block mt-4 md:text-base"
-          >
-            EDUCATION
-          </Link>
+          <div className="mt-4 flex gap-2">
+            {data?.categories.map((category) => (
+              <Link
+                to={`/blog?category=${category.name}`}
+                className="text-primary text-sm font-roboto inline-block mt-4 md:text-base"
+              >
+                {category.name}
+              </Link>
+            ))}
+          </div>
           <h1 className="text-xl font-medium font-roboto mt-4 text-dark-hard md:text-[26px]">
-            Help children get better education
+            {data?.title}
           </h1>
           {/* content  */}
-          <div className="mt-4 text-dark-soft">
-            <p className="leading-7">
+          <div className="mt-4 prose prose-sm  sm:prose-base">
+            {/* <p className="leading-7">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua.
               Egestas purus viverra accumsan in nisl nisi. Arcu cursus vitae
@@ -93,7 +114,9 @@ const ArticleDetailPage = () => {
               imperdiet sed euismod nisi porta lorem mollis. Morbi tristique
               senectus et netus. Mattis pellentesque id nibh tortor id aliquet
               lectus proin.
-            </p>
+            </p> */}
+           {console.log(data?.body.caption)}
+            {body}
           </div>
           {/* comments section  */}
           <CommentsContainer className="mt-10" loggedinUserId="a" />
