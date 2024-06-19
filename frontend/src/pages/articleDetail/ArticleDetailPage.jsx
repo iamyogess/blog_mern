@@ -15,6 +15,8 @@ import Text from "@tiptap/extension-text";
 import Italic from "@tiptap/extension-italic";
 import { getSinglePost } from "../../services/posts";
 import parse from "html-react-parser";
+import ArticleDetailSkeleton from "./components/ArticleDetailSkeleton";
+import ErrorMessage from "../../components/ErrorMessage";
 
 const postData = [
   {
@@ -59,7 +61,7 @@ const ArticleDetailPage = () => {
   const [breadCrumbs, setBreadCrumbs] = useState([]);
   const [body, setBody] = useState(null);
 
-  const { data } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryFn: () => getSinglePost({ slug }),
     queryKey: ["singlePost"],
     onSuccess: (data) => {
@@ -79,34 +81,39 @@ const ArticleDetailPage = () => {
 
   return (
     <MainLayout>
-      <section className="container mx-auto max-w-5xl flex flex-col px-5 py-5 lg:flex-row lg:gap-x-5 lg:items-start">
-        <article className="flex-1">
-          <BreadCrumbs data={breadCrumbs} />
-          <img
-            src={
-              data?.photo
-                ? stables.UPLOAD_FOLDER_BASE_URL + data?.photo
-                : images.samplePostImage
-            }
-            alt={data?.title}
-            className="rounded-xl w-full"
-          />
-          <div className="mt-4 flex gap-2">
-            {data?.categories.map((category) => (
-              <Link
-                to={`/blog?category=${category.name}`}
-                className="text-primary text-sm font-roboto inline-block mt-4 md:text-base"
-              >
-                {category.name}
-              </Link>
-            ))}
-          </div>
-          <h1 className="text-xl font-medium font-roboto mt-4 text-dark-hard md:text-[26px]">
-            {data?.title}
-          </h1>
-          {/* content  */}
-          <div className="mt-4 prose prose-sm  sm:prose-base">
-            {/* <p className="leading-7">
+      {isLoading ? (
+        <ArticleDetailSkeleton />
+      ) : isError ? (
+        <ErrorMessage message={`Could not fetch post!`} />
+      ) : (
+        <section className="container mx-auto max-w-5xl flex flex-col px-5 py-5 lg:flex-row lg:gap-x-5 lg:items-start">
+          <article className="flex-1">
+            <BreadCrumbs data={breadCrumbs} />
+            <img
+              src={
+                data?.photo
+                  ? stables.UPLOAD_FOLDER_BASE_URL + data?.photo
+                  : images.samplePostImage
+              }
+              alt={data?.title}
+              className="rounded-xl w-full"
+            />
+            <div className="mt-4 flex gap-2">
+              {data?.categories.map((category) => (
+                <Link
+                  to={`/blog?category=${category.name}`}
+                  className="text-primary text-sm font-roboto inline-block mt-4 md:text-base"
+                >
+                  {category.name}
+                </Link>
+              ))}
+            </div>
+            <h1 className="text-xl font-medium font-roboto mt-4 text-dark-hard md:text-[26px]">
+              {data?.title}
+            </h1>
+            {/* content  */}
+            <div className="mt-4 prose prose-sm  sm:prose-base">
+              {/* <p className="leading-7">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua.
               Egestas purus viverra accumsan in nisl nisi. Arcu cursus vitae
@@ -115,31 +122,32 @@ const ArticleDetailPage = () => {
               senectus et netus. Mattis pellentesque id nibh tortor id aliquet
               lectus proin.
             </p> */}
-           {console.log(data?.body.caption)}
-            {body}
-          </div>
-          {/* comments section  */}
-          <CommentsContainer className="mt-10" loggedinUserId="a" />
-        </article>
-        <div>
-          <SuggestedPosts
-            header="Latest Article"
-            posts={postData}
-            tags={tags}
-            className="mt-8 lg:mt-0 lg:max-w-xs"
-          />
-          {/* social media buttons  */}
-          <div className="mt-7">
-            <h2 className="font-roboto font-medium text-dark-hard mb-4 md:text-xl">
-              Share on:
-            </h2>
-            <SocialShareButton
-              url={encodeURI("https://twitter.com/iamyogess")}
-              title={encodeURIComponent("Yogesh's X profile")}
+              {console.log(data?.body.caption)}
+              {body}
+            </div>
+            {/* comments section  */}
+            <CommentsContainer className="mt-10" loggedinUserId="a" />
+          </article>
+          <div>
+            <SuggestedPosts
+              header="Latest Article"
+              posts={postData}
+              tags={tags}
+              className="mt-8 lg:mt-0 lg:max-w-xs"
             />
+            {/* social media buttons  */}
+            <div className="mt-7">
+              <h2 className="font-roboto font-medium text-dark-hard mb-4 md:text-xl">
+                Share on:
+              </h2>
+              <SocialShareButton
+                url={encodeURI("https://twitter.com/iamyogess")}
+                title={encodeURIComponent("Yogesh's X profile")}
+              />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </MainLayout>
   );
 };
