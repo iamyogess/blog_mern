@@ -17,6 +17,7 @@ import { getSinglePost } from "../../services/posts";
 import parse from "html-react-parser";
 import ArticleDetailSkeleton from "./components/ArticleDetailSkeleton";
 import ErrorMessage from "../../components/ErrorMessage";
+import { useSelector } from "react-redux";
 
 const postData = [
   {
@@ -57,7 +58,7 @@ const tags = [
 
 const ArticleDetailPage = () => {
   const { slug } = useParams();
-
+  const userState = useSelector((state) => state.user);
   const [breadCrumbs, setBreadCrumbs] = useState([]);
   const [body, setBody] = useState(null);
 
@@ -126,7 +127,11 @@ const ArticleDetailPage = () => {
               {body}
             </div>
             {/* comments section  */}
-            <CommentsContainer className="mt-10" loggedinUserId="a" />
+            <CommentsContainer
+              className="mt-10"
+              loggedinUserId={userState.userInfo?._id}
+              comments={data?.comments}
+            />
           </article>
           <div>
             <SuggestedPosts
