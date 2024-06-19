@@ -66,7 +66,6 @@ const ArticleDetailPage = () => {
     queryFn: () => getSinglePost({ slug }),
     queryKey: ["singlePost"],
     onSuccess: (data) => {
-      console.log(data);
       setBreadCrumbs([
         { name: "Home", link: `/` },
         { name: "Blog", link: `/blog` },
@@ -123,7 +122,7 @@ const ArticleDetailPage = () => {
               senectus et netus. Mattis pellentesque id nibh tortor id aliquet
               lectus proin.
             </p> */}
-              {console.log(data?.body.caption)}
+              {/* {console.log(data?.body.caption)} */}
               {body}
             </div>
             {/* comments section  */}
@@ -131,6 +130,7 @@ const ArticleDetailPage = () => {
               className="mt-10"
               loggedinUserId={userState.userInfo?._id}
               comments={data?.comments}
+              postSlug={slug}
             />
           </article>
           <div>

@@ -4,7 +4,8 @@ const CommentForm = ({
   btnLabel,
   formSubmitHandler,
   formCancelHandler = null,
-  initialText = ""
+  initialText = "",
+  loading = false,
 }) => {
   const [value, setValue] = useState(initialText);
 
@@ -26,13 +27,17 @@ const CommentForm = ({
         />
         <div className="flex items-center gap-x-2 pt-2">
           {formCancelHandler && (
-            <button onClick={formCancelHandler} className="px-6 py-2.5 rounded-lg bg-red-500 text-white font-semibold mt-2">
+            <button
+              onClick={formCancelHandler}
+              className="px-6 py-2.5 rounded-lg bg-red-500 text-white font-semibold mt-2"
+            >
               Cancel
             </button>
           )}
           <button
+            disabled={loading}
             type="submit"
-            className="px-6 py-2.5 rounded-lg bg-primary text-white font-semibold mt-2"
+            className="px-6 py-2.5 rounded-lg bg-primary text-white font-semibold mt-2 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {btnLabel}
           </button>
