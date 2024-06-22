@@ -19,16 +19,6 @@ import ArticleDetailSkeleton from "./components/ArticleDetailSkeleton";
 import ErrorMessage from "../../components/ErrorMessage";
 import { useSelector } from "react-redux";
 
-const tags = [
-  "Medical",
-  "Education",
-  "News",
-  "Healthy",
-  "Food",
-  "Diet",
-  "Technology",
-];
-
 const ArticleDetailPage = () => {
   const { slug } = useParams();
   const userState = useSelector((state) => state.user);
@@ -52,7 +42,7 @@ const ArticleDetailPage = () => {
     },
   });
 
-  const { data:postsData } = useQuery({
+  const { data: postsData } = useQuery({
     queryFn: () => getAllPosts({ slug }),
     queryKey: ["posts"],
   });
@@ -115,7 +105,7 @@ const ArticleDetailPage = () => {
             <SuggestedPosts
               header="Latest Article"
               posts={postsData}
-              tags={tags}
+              tags={data?.tags}
               className="mt-8 lg:mt-0 lg:max-w-xs"
             />
             {/* social media buttons  */}
@@ -124,8 +114,8 @@ const ArticleDetailPage = () => {
                 Share on:
               </h2>
               <SocialShareButton
-                url={encodeURI("https://twitter.com/iamyogess")}
-                title={encodeURIComponent("Yogesh's X profile")}
+                url={encodeURI(window.location.href)}
+                title={encodeURIComponent(data?.title)}
               />
             </div>
           </div>
