@@ -13,38 +13,11 @@ import Document from "@tiptap/extension-document";
 import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
 import Italic from "@tiptap/extension-italic";
-import { getSinglePost } from "../../services/posts";
+import { getAllPosts, getSinglePost } from "../../services/posts";
 import parse from "html-react-parser";
 import ArticleDetailSkeleton from "./components/ArticleDetailSkeleton";
 import ErrorMessage from "../../components/ErrorMessage";
 import { useSelector } from "react-redux";
-
-const postData = [
-  {
-    _id: "1",
-    image: images.Post1Image,
-    title: "Help children get better education",
-    createdAt: "random date",
-  },
-  {
-    _id: "2",
-    image: images.Post1Image,
-    title: "Help children get better education",
-    createdAt: "random date",
-  },
-  {
-    _id: "3",
-    image: images.Post1Image,
-    title: "Help children get better education",
-    createdAt: "random date",
-  },
-  {
-    _id: "4",
-    image: images.Post1Image,
-    title: "Help children get better education",
-    createdAt: "random date",
-  },
-];
 
 const tags = [
   "Medical",
@@ -77,6 +50,11 @@ const ArticleDetailPage = () => {
         )
       );
     },
+  });
+
+  const { data:postsData } = useQuery({
+    queryFn: () => getAllPosts({ slug }),
+    queryKey: ["posts"],
   });
 
   return (
@@ -136,7 +114,7 @@ const ArticleDetailPage = () => {
           <div>
             <SuggestedPosts
               header="Latest Article"
-              posts={postData}
+              posts={postsData}
               tags={tags}
               className="mt-8 lg:mt-0 lg:max-w-xs"
             />
