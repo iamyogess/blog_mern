@@ -84,7 +84,14 @@ const Header = () => {
                     setActiveNavName={setActiveNavName}
                   />
                 ) : (
-                  <NavItemCollapse />
+                  <NavItemCollapse
+                    title={item.title}
+                    content={item.content}
+                    icon={item.icon}
+                    name={item.name}
+                    activeNavName={activeNavName}
+                    setActiveNavName={setActiveNavName}
+                  />
                 )
               )}
             </div>
