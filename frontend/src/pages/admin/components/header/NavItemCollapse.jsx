@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const NavItemCollapse = ({
@@ -9,7 +9,14 @@ const NavItemCollapse = ({
   activeNavName,
   setActiveNavName,
 }) => {
-  const [isChecked,setIsChecked] = useState(false)
+  const [isChecked, setIsChecked] = useState(false);
+
+  useEffect(() => {
+    if (activeNavName !== name) {
+      setIsChecked(false);
+    }
+  }, [activeNavName, name]);
+
   return (
     <div className="collapse collapse-arrow bg-base-200 min-h-0 rounded-none py-2">
       <input
@@ -17,8 +24,8 @@ const NavItemCollapse = ({
         className="min-h-0 py-0"
         checked={name === activeNavName}
         onChange={() => {
-          setActiveNavName(name)
-          setIsChecked(!isChecked)
+          setActiveNavName(name);
+          setIsChecked(!isChecked);
         }}
       />
       <div
@@ -34,7 +41,9 @@ const NavItemCollapse = ({
       <div className="collapse-content">
         <div className="mt-2 flex flex-col gap-y-2">
           {content.map((item) => (
-            <Link to={item.link}>{item.title}</Link>
+            <Link key={item.link} to={item.link}>
+              {item.title}
+            </Link>
           ))}
         </div>
       </div>
