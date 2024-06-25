@@ -3,6 +3,7 @@ import Comment from "../models/Comment.js";
 import { fileRemover } from "../utils/fileRemover.js";
 import { uploadPicture } from "../middlewares/uploadPictureMiddleware.js";
 import { v4 as uuid4 } from "uuid";
+import { json } from "express";
 
 const createPost = async (req, res, next) => {
   try {
@@ -139,13 +140,44 @@ const getPost = async (req, res, next) => {
 
 const getAllPosts = async (req, res, next) => {
   try {
-    const posts = await Post.find({}).populate([
-      {
-        path: "user",
-        select: ["avatar", "name", "verified"],
-      },
-    ]);
-    return res.json(posts);
+    const filter = req.query.searchKeyword;
+    let where = {};
+    if (filter) {
+      where.title = { $regex: filter, $options: "i" }; //i = case insensitive
+    }
+    let query = Post.find(where);
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * pageSize;
+    const total = await Post.countDocuments();
+    const pages = Math.ceil(total / pageSize);
+
+    if (page > pages) {
+      const error = new Error("No page found!");
+      return next(error);
+    }
+
+    const result = await query
+      .skip(skip)
+      .limit(pageSize)
+      .populate([
+        {
+          path: "user",
+          select: ["avatar", "name", "verified"],
+        },
+      ])
+      .sort({ updatedAt: "descending" });
+
+      res.header({
+        "x-filter": filter,
+        "x-totalCount": JSON.stringify(total),
+        "x-currentPage": JSON.stringify(page),
+        "x-pageSize": JSON.stringify(pageSize),
+        "x-totalPageCount": JSON.stringify(pages),
+      });
+      
+
+    return res.json(result);
   } catch (error) {
     next(error);
   }
