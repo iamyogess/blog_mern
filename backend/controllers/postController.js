@@ -168,15 +168,13 @@ const getAllPosts = async (req, res, next) => {
       ])
       .sort({ updatedAt: "descending" });
 
-      res.header({
-        "x-filter": filter,
-        "x-totalCount": JSON.stringify(total),
-        "x-currentPage": JSON.stringify(page),
-        "x-pageSize": JSON.stringify(pageSize),
-        "x-totalPageCount": JSON.stringify(pages),
-      });
-      
-
+    res.header({
+      "x-filter": filter,
+      "x-totalCount": JSON.stringify(total),
+      "x-currentPage": JSON.stringify(page),
+      "x-pageSize": JSON.stringify(pageSize),
+      "x-totalPageCount": JSON.stringify(pages),
+    });
     return res.json(result);
   } catch (error) {
     next(error);
