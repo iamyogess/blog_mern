@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const ManagePost = () => {
-  return (
-    <div>ManagePost</div>
-  )
-}
+  return <div>ManagePost</div>;
+};
 
-export default ManagePost
+export default ManagePost;

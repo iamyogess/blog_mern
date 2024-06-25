@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import MainLayout from "../../components/MainLayout";
 import { getUserProfile, updateProfile } from "../../services/index/users";
 
@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { useMutation, useQuery,useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import ProfilePicture from "./../../components/ProfilePicture";
 import { userActions } from "../../store/reducers/userReducer";
 import { toast } from "react-hot-toast";
@@ -38,7 +38,7 @@ const ProfilePage = () => {
     onSuccess: (data) => {
       dispatch(userActions.setUserInfo(data));
       localStorage.setItem("account", JSON.stringify(data));
-      queryClient.invalidateQueries(['profile']);
+      queryClient.invalidateQueries(["profile"]);
       toast.success("Profile is updated!");
     },
     onError: (error) => {
@@ -63,12 +63,15 @@ const ProfilePage = () => {
       email: "",
       password: "",
     },
-    values: {
-      name: profileIsLoading ? "" : profileData.name,
-      email: profileIsLoading ? "" : profileData.email,
-    },
+    values: useMemo(() => {
+      return {
+        name: profileIsLoading ? "" : profileData.name,
+        email: profileIsLoading ? "" : profileData.email,
+      };
+    }, [profileData?.email, profileData?.name, profileIsLoading]),
     mode: "onChange",
   });
+
 
   const submitHandler = (data) => {
     const { name, email, password } = data;
