@@ -1,17 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getAllPosts } from "../../../../services/posts";
 import { stables, images } from "./../../../../constants";
 
 const ManagePost = () => {
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
   const {
     data: postData,
     isLoading,
     isFetching,
+    refetch,
   } = useQuery({
-    queryFn: () => getAllPosts(),
+    queryFn: () => getAllPosts(searchKeyword,currentPage),
     queryKey: ["posts"],
   });
+
+  const searchKeywordHandler = (e) => {
+    const { value } = e.target;
+    setSearchKeyword(value);
+  };
+
+  const submitSearchKeywordHandler = (e) => {
+    e.preventDefault();
+    refetch();
+  };
 
   return (
     <div>
@@ -21,13 +35,18 @@ const ManagePost = () => {
           <div className="flex flex-row justify-between w-full mb-1 sm:mb-0">
             <h2 className="text-2xl leading-tight">Users</h2>
             <div className="text-end">
-              <form className="flex flex-col justify-center w-3/4 max-w-sm space-y-3 md:flex-row md:w-full md:space-x-3 md:space-y-0">
+              <form
+                onSubmit={submitSearchKeywordHandler}
+                className="flex flex-col justify-center w-3/4 max-w-sm space-y-3 md:flex-row md:w-full md:space-x-3 md:space-y-0"
+              >
                 <div className=" relative ">
                   <input
                     type="text"
                     id='"form-subscribe-Filter'
                     className=" rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                    placeholder="name"
+                    placeholder="Post Title"
+                    onChange={searchKeywordHandler}
+                    value={searchKeyword}
                   />
                 </div>
                 <button
@@ -82,8 +101,8 @@ const ManagePost = () => {
                       </td>
                     </tr>
                   ) : (
-                    postData?.data.map((post) => (
-                      <tr>
+                    postData?.data.map((post, index) => (
+                      <tr key={index}>
                         <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
                           <div className="flex items-center">
                             <div className="flex-shrink-0">
@@ -130,7 +149,7 @@ const ManagePost = () => {
                           <div className="flex gap-x-2">
                             {post.tags.length > 0
                               ? post.tags.map((tag, index) => (
-                                  <p>
+                                  <p key={index}>
                                     {tag},
                                     {post.tags.length - 1 !== index && ","}
                                   </p>
