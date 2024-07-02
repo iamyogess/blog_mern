@@ -8,16 +8,13 @@ import CommentsContainer from "../../components/comments/CommentsContainer";
 import SocialShareButton from "../../components/SocialShareButton";
 import { useQuery } from "@tanstack/react-query";
 import { generateHTML } from "@tiptap/html";
-import Bold from "@tiptap/extension-bold";
-import Document from "@tiptap/extension-document";
-import Paragraph from "@tiptap/extension-paragraph";
-import Text from "@tiptap/extension-text";
-import Italic from "@tiptap/extension-italic";
+
 import { getAllPosts, getSinglePost } from "../../services/posts";
-import parse from "html-react-parser";
+
 import ArticleDetailSkeleton from "./components/ArticleDetailSkeleton";
 import ErrorMessage from "../../components/ErrorMessage";
 import { useSelector } from "react-redux";
+import parseJsonToHtml from "../../utils/parseJsonToHtml";
 
 const ArticleDetailPage = () => {
   const { slug } = useParams();
@@ -34,11 +31,7 @@ const ArticleDetailPage = () => {
         { name: "Blog", link: `/blog` },
         { name: "Article Title", link: `/blog/${data.slug}` },
       ]);
-      setBody(
-        parse(
-          generateHTML(data?.body, [Bold, Italic, Paragraph, Document, Text])
-        )
-      );
+      setBody(parseJsonToHtml(data?.body));
     },
   });
 

@@ -28,6 +28,7 @@ const App = () => {
           <Route path="comments"  element={<Comments />} />
           <Route path="posts/new"  element={<NewPost />} />
           <Route path="posts/manage"  element={<ManagePost />} />
+          <Route path="posts/manage/edit/:slug"  element={<EditPosts />} />
         </Route>
       </Routes>
       <Toaster />
