@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getAllPosts } from "../../../../services/posts";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { deletePost, getAllPosts } from "../../../../services/posts";
 import { stables, images } from "./../../../../constants";
 import Pagination from "../../../../components/Pagination";
-
+import { toast } from "react-hot-toast";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 let isFirstRun = true;
 
 const ManagePost = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const queryClient = useQueryClient();
+
+  const userState = useSelector((state) => state.user);
 
   const {
     data: postData,
@@ -20,6 +25,24 @@ const ManagePost = () => {
     queryFn: () => getAllPosts(searchKeyword, currentPage),
     queryKey: ["posts"],
   });
+
+  const { mutate: mutateDeletePost, isLoading: isLoadingDeletePost } =
+    useMutation({
+      mutationFn: ({ slug, token }) => {
+        return deletePost({
+          slug,
+          token,
+        });
+      },
+      onSuccess: (data) => {
+        queryClient.invalidateQueries(["posts"]);
+        toast.success("Post is deleted!");
+      },
+      onError: (error) => {
+        toast.error(error.message);
+        console.log(error);
+      },
+    });
 
   useEffect(() => {
     if (isFirstRun) {
@@ -37,6 +60,10 @@ const ManagePost = () => {
     e.preventDefault();
     setCurrentPage(1);
     refetch();
+  };
+
+  const deletePostHandler = ({ slug, token }) => {
+    mutateDeletePost({ slug, token });
   };
 
   return (
@@ -112,6 +139,12 @@ const ManagePost = () => {
                         Loading ...
                       </td>
                     </tr>
+                  ) : postData?.data.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="text-center py-10 w-full">
+                        No posts found!
+                      </td>
+                    </tr>
                   ) : (
                     postData?.data.map((post, index) => (
                       <tr key={index}>
@@ -169,13 +202,26 @@ const ManagePost = () => {
                               : "No tags"}
                           </div>
                         </td>
-                        <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
-                          <a
-                            href="/"
-                            className="text-indigo-600 hover:text-indigo-900"
+                        <td className="px-5 py-5 text-sm bg-white border-b border-gray-200 space-x-5">
+                          <button
+                            disabled={isLoadingDeletePost}
+                            type="button"
+                            className="text-red-600 hover:text-red-900 disabled:opacity-70 disabled:cursor-not-allowed"
+                            onClick={() =>
+                              deletePostHandler({
+                                slug: post?.slug,
+                                token: userState.userInfo.token,
+                              })
+                            }
+                          >
+                            Delete
+                          </button>
+                          <Link
+                            to="/"
+                            className="text-green-600 hover:text-green-900"
                           >
                             Edit
-                          </a>
+                          </Link>
                         </td>
                       </tr>
                     ))
@@ -186,9 +232,11 @@ const ManagePost = () => {
                 <Pagination
                   onPageChange={(page) => setCurrentPage(page)}
                   currentPage={currentPage}
-                  totalPageCount={postData?.headers?.["x-totalPageCount"]
-                    ? JSON.parse(postData.headers["x-totalPageCount"])
-                    : 0}
+                  totalPageCount={
+                    postData?.headers?.["x-totalPageCount"]
+                      ? JSON.parse(postData.headers["x-totalPageCount"])
+                      : 0
+                  }
                 />
               )}
             </div>
