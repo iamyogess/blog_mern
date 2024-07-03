@@ -5,9 +5,10 @@ import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
 import Italic from "@tiptap/extension-italic";
 import { generateHTML } from '@tiptap/html';
+import { extensions } from "../constants/tiptapExtensions";
 
 const parseJsonToHtml = (json) => {
-  return parse(generateHTML(json, [Bold, Italic, Paragraph, Document, Text]));
+  return parse(generateHTML(json, extensions));
 };
 
 export default parseJsonToHtml;

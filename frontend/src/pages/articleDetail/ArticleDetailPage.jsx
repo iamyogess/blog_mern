@@ -85,7 +85,7 @@ const ArticleDetailPage = () => {
               lectus proin.
             </p> */}
               {/* {console.log(data?.body.caption)} */}
-              {body}
+              {/* {body} */}
               {!isLoading && !isError && (
                 <Editor content={data?.body} editable={false} />
               )}
