@@ -15,6 +15,7 @@ import ArticleDetailSkeleton from "./components/ArticleDetailSkeleton";
 import ErrorMessage from "../../components/ErrorMessage";
 import { useSelector } from "react-redux";
 import parseJsonToHtml from "../../utils/parseJsonToHtml";
+import Editor from "../../components/Editor/Editor";
 
 const ArticleDetailPage = () => {
   const { slug } = useParams();
@@ -85,6 +86,9 @@ const ArticleDetailPage = () => {
             </p> */}
               {/* {console.log(data?.body.caption)} */}
               {body}
+              {!isLoading && !isError && (
+                <Editor content={data?.body} editable={false} />
+              )}
             </div>
             {/* comments section  */}
             <CommentsContainer

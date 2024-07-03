@@ -8,6 +8,7 @@ import { HiOutlineCamera } from "react-icons/hi";
 import parseJsonToHtml from "./../../../../utils/parseJsonToHtml";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
+import Editor from "./../../../../components/Editor/Editor";
 
 const EditPost = () => {
   const { slug } = useParams();
@@ -43,7 +44,7 @@ const EditPost = () => {
   useEffect(() => {
     if (!isError && !isLoading) {
       setInitialPhoto(data?.photo);
-      setBody(parseJsonToHtml(data?.body));
+      // setBody(parseJsonToHtml(data?.body));
     }
   }, [data, isError, isLoading]);
 
@@ -70,7 +71,7 @@ const EditPost = () => {
 
       updatedData.append("postPicture", picture);
     }
-    updatedData.append("document", JSON.stringify({}));
+    updatedData.append("document", JSON.stringify({ body }));
     mutateUpdatePostDetail({
       updatedData,
       slug,
@@ -140,7 +141,18 @@ const EditPost = () => {
             {data?.title}
           </h1>
           {/* content  */}
-          <div className="mt-4 prose prose-sm sm:prose-base">{body}</div>
+          {/* <div className="mt-4 prose prose-sm sm:prose-base">{body}</div> */}
+          <div className="w-full">
+            {!isLoading && !isError && (
+              <Editor
+                content={data?.body}
+                editable={true}
+                onDataChange={(data) => {
+                  setBody(data);
+                }}
+              />
+            )}
+          </div>
           <button
             disabled={isLoadingUpdatePostDetail}
             type="button"
