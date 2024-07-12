@@ -30,4 +30,28 @@ const getPostCategories = async (req, res, next) => {
   }
 };
 
-export { createPostCategory ,getPostCategories};
+const updatePostCategory = async (req, res, next) => {
+  try {
+    const { title } = req.body;
+    const postCategory = await PostCategories.findByIdAndUpdate(
+      req.params.postCategoryId,
+      {
+        title,
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!postCategory) {
+      const error = new Error("Category not found!");
+      return next(error);
+    }
+
+    return res.json(postCategory);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { createPostCategory, getPostCategories, updatePostCategory };
