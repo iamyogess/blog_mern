@@ -21,4 +21,13 @@ const createPostCategory = async (req, res, next) => {
   }
 };
 
-export { createPostCategory };
+const getPostCategories = async (req, res, next) => {
+  try {
+    const postCategories = await PostCategories.find({});
+    return res.json(postCategories);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { createPostCategory ,getPostCategories};
