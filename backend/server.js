@@ -12,6 +12,7 @@ import {
 import userRoutes from "./routes/userRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import commentRoutes from "./routes/commentRoute.js";
+import postCategoriesRoutes from "./routes/postCategoriesRoute.js";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -29,6 +30,7 @@ connectDB();
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
+app.use("/api/post-category", postCategoriesRoutes);
 
 // Define __dirname using ES module approach
 const __filename = fileURLToPath(import.meta.url);
