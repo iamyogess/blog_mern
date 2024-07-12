@@ -1,3 +1,4 @@
+import Post from "../models/Post.js";
 import PostCategories from "../models/PostCategories.js";
 
 const createPostCategory = async (req, res, next) => {
@@ -47,11 +48,29 @@ const updatePostCategory = async (req, res, next) => {
       const error = new Error("Category not found!");
       return next(error);
     }
-
     return res.json(postCategory);
   } catch (error) {
     next(error);
   }
 };
 
-export { createPostCategory, getPostCategories, updatePostCategory };
+const deletePostCategory = async (req, res, next) => {
+  try {
+    const categoryId = req.params.postCategoryId;
+    await Post.updateMany(
+      { categories: { $in: [categoryId] } },
+      { $pull: { categories: categoryId } }
+    ); //delete a category that are assigned to posts
+    await PostCategories.deleteOne({ _id: categoryId });
+    return res.json({ message: "Post Category is deleted!" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export {
+  createPostCategory,
+  getPostCategories,
+  updatePostCategory,
+  deletePostCategory,
+};
