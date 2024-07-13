@@ -1,16 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { getSinglePost, updatePost } from "../../../../services/posts";
 import { useParams, Link } from "react-router-dom";
 import ArticleDetailSkeleton from "../../../articleDetail/components/ArticleDetailSkeleton";
 import { stables } from "../../../../constants";
 import { HiOutlineCamera } from "react-icons/hi";
-import parseJsonToHtml from "./../../../../utils/parseJsonToHtml";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import Editor from "./../../../../components/Editor/Editor";
 import MultiSelectTagDropdown from "../../components/select-dropdown/MultiSelectTagDropdown";
 import { getAllCategories } from "../../../../services/postCategories";
+import CreatableSelect from "react-select/creatable";
 import {
   categoryToOption,
   filterCategories,
@@ -28,6 +28,7 @@ const EditPost = () => {
   const [initialPhoto, setInitialPhoto] = useState(null);
   const [body, setBody] = useState(null);
   const [categories, setCategories] = useState(null);
+  const [title, setTitle] = useState("");
 
   const queryClient = useQueryClient();
   const userState = useSelector((state) => state.user);
@@ -35,6 +36,11 @@ const EditPost = () => {
   const { data, isLoading, isError } = useQuery({
     queryFn: () => getSinglePost({ slug }),
     queryKey: ["singlePost", slug],
+    onSuccess: (data) => {
+      setInitialPhoto(data?.photo);
+      setCategories(data.categories.map((item) => item.value));
+      setTitle(data.title);
+    },
   });
 
   const {
@@ -55,13 +61,11 @@ const EditPost = () => {
   });
   console.log(data);
 
-  useEffect(() => {
-    if (!isError && !isLoading) {
-      setInitialPhoto(data?.photo);
-      // setBody(parseJsonToHtml(data?.body));
-      setCategories(data.categories.map((item) => item.value));
-    }
-  }, [data, isError, isLoading]);
+  // useEffect(() => {
+  //   if (!isError && !isLoading) {
+
+  //   }
+  // }, [data, isError, isLoading]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -89,7 +93,7 @@ const EditPost = () => {
       updatedData.append("postPicture", picture);
     }
 
-    updatedData.append("document", JSON.stringify({ body, categories }));
+    updatedData.append("document", JSON.stringify({ body, categories, title }));
 
     mutateUpdatePostDetail({
       updatedData,
@@ -156,11 +160,40 @@ const EditPost = () => {
               </Link>
             ))}
           </div>
-          <h1 className="text-xl font-medium font-roboto mt-4 text-dark-hard md:text-[26px]">
-            {data?.title}
-          </h1>
+          {/* title  */}
+          <div className="d-4-control w-full">
+            <label htmlFor="title" className="d-label">
+              <span className="d-label-text">Title</span>
+            </label>
+            <input
+              value={title}
+              className="d-input d-input-bordered w-full border-slate-300 !outline-slate-300 text-xl font-medium font-roboto  text-dark-hard"
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Title"
+              id="title"
+            />
+          </div>
           {/* categories  */}
           <div className="my-5 w-full">
+            <label htmlFor="categories" className="d-label">
+              <span className="d-label-text">Tags</span>
+            </label>
+            {isPostDataLoaded && (
+              <CreatableSelect
+                loadOptions={promiseOptions}
+                defaultValue={data.categories.map(categoryToOption)}
+                onChange={(newValue) =>
+                  setCategories(newValue.map((item) => item.value))
+                }
+              />
+            )}
+          </div>
+
+          {/* tags  */}
+          <div className="my-5 w-full">
+            <label htmlFor="categories" className="d-label">
+              <span className="d-label-text">Categories</span>
+            </label>
             {isPostDataLoaded && (
               <MultiSelectTagDropdown
                 loadOptions={promiseOptions}
@@ -175,6 +208,9 @@ const EditPost = () => {
           {/* content  */}
           {/* <div className="mt-4 prose prose-sm sm:prose-base">{body}</div> */}
           <div className="w-full">
+            <label htmlFor="tools" className="d-label">
+              <span className="d-label-text">Tools</span>
+            </label>
             {isPostDataLoaded && (
               <Editor
                 content={data?.body}
