@@ -9,12 +9,25 @@ import parseJsonToHtml from "./../../../../utils/parseJsonToHtml";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import Editor from "./../../../../components/Editor/Editor";
+import MultiSelectTagDropdown from "../../components/select-dropdown/MultiSelectTagDropdown";
+import { getAllCategories } from "../../../../services/postCategories";
+import {
+  categoryToOption,
+  filterCategories,
+} from "../../../../utils/multiSelectTagUtils";
+
+const promiseOptions = async (inputValue) => {
+  const categoriesData = await getAllCategories();
+  // console.log("Category data: ", categoriesData)
+  return filterCategories(inputValue, categoriesData);
+};
 
 const EditPost = () => {
   const { slug } = useParams();
   const [photo, setPhoto] = useState(null);
   const [initialPhoto, setInitialPhoto] = useState(null);
   const [body, setBody] = useState(null);
+  const [categories, setCategories] = useState(null);
 
   const queryClient = useQueryClient();
   const userState = useSelector((state) => state.user);
@@ -40,11 +53,13 @@ const EditPost = () => {
       console.log(error);
     },
   });
+  console.log(data);
 
   useEffect(() => {
     if (!isError && !isLoading) {
       setInitialPhoto(data?.photo);
       // setBody(parseJsonToHtml(data?.body));
+      setCategories(data.categories.map((item) => item.value));
     }
   }, [data, isError, isLoading]);
 
@@ -52,6 +67,8 @@ const EditPost = () => {
     const file = e.target.files[0];
     setPhoto(file);
   };
+
+  let isPostDataLoaded = !isLoading && !isError;
 
   const handleUpdatePost = async () => {
     let updatedData = new FormData();
@@ -71,7 +88,9 @@ const EditPost = () => {
 
       updatedData.append("postPicture", picture);
     }
-    updatedData.append("document", JSON.stringify({ body }));
+
+    updatedData.append("document", JSON.stringify({ body, categories }));
+
     mutateUpdatePostDetail({
       updatedData,
       slug,
@@ -140,10 +159,23 @@ const EditPost = () => {
           <h1 className="text-xl font-medium font-roboto mt-4 text-dark-hard md:text-[26px]">
             {data?.title}
           </h1>
+          {/* categories  */}
+          <div className="my-5 w-full">
+            {isPostDataLoaded && (
+              <MultiSelectTagDropdown
+                loadOptions={promiseOptions}
+                defaultValue={data.categories.map(categoryToOption)}
+                onChange={(newValue) =>
+                  setCategories(newValue.map((item) => item.value))
+                }
+              />
+            )}
+          </div>
+
           {/* content  */}
           {/* <div className="mt-4 prose prose-sm sm:prose-base">{body}</div> */}
           <div className="w-full">
-            {!isLoading && !isError && (
+            {isPostDataLoaded && (
               <Editor
                 content={data?.body}
                 editable={true}
